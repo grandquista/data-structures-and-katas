@@ -1,7 +1,8 @@
+from functools import lru_cache
 from re import search, split
 from typing import Iterable
 
-LIMIT = 16384
+LIMIT = 4
 
 SOLUTION_ODD = {
     1: '[01]+',
@@ -397,16 +398,24 @@ SOLUTION_ODD = {
 def _kata_3(d: int = 90) -> str:
     if not d:
         return ''
-    d -= 1
+    sub = _kata_3(d - 1)
+    if sub:
+        return (
+            f'(11'
+            f'|10{ sub }01'
+            f'|01{ sub }10'
+            f'|0{ sub }'
+            f'|{ sub })+'
+        )
     return (
         f'(11'
-        f'|10{ _kata_3(d) }01'
-        f'|01{ _kata_3(d) }10'
-        f'|0{ _kata_3(d) }'
-        f'|{ _kata_3(d) })+'
+        f'|10{ sub }01'
+        f'|01{ sub }10'
+        f'|0{ sub })+'
     )
 
 
+@lru_cache()
 def _kata(n: int) -> str:
     if n % 2 == 0:
         return f'{ _kata(n // 2) }0'
@@ -416,6 +425,7 @@ def _kata(n: int) -> str:
 
 
 # 01?:*+^$()[]|
+@lru_cache()
 def kata(n: int) -> str:
     """
     Kata.
